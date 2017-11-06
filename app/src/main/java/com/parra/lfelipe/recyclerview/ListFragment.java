@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ListFragment extends DialogFragment {
+public class ListFragment extends DialogFragment{
 
     InterfaceSite searchSite;
     FragmentAdapter adapter;

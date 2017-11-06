@@ -1,7 +1,7 @@
 package com.parra.lfelipe.recyclerview;
 
 import android.content.Context;
-import android.support.v4.app.*;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,14 +21,15 @@ import java.util.List;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
 
     private final Context context;
+    private InterfaceSite listSite;
     private LayoutInflater inflater;
     private List<Lugar> lugares;
     private FragmentManager fm;
-    public RecyclerAdapter(Context context, List<Lugar> lugares, FragmentManager fm) {
+    public RecyclerAdapter(Context context, List<Lugar> lugares, InterfaceSite listSite) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.lugares = lugares;
-        this.fm = fm;
+        this.listSite = listSite;
     }
 
 
@@ -70,10 +71,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String name = tvTitle.getText().toString();
-                    FragmentTransaction ft = fm.beginTransaction();
-                    ListFragment listFrament = ListFragment.newInstance(name);
-                    listFrament.show(ft,"Lista");
+                    String name = lugares.get(getAdapterPosition()).getNombre();
+                    listSite.listSite(name);
                 }
             });
         }
