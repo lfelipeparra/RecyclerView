@@ -45,6 +45,8 @@ public class FragmentAdapter extends RecyclerView.Adapter<FragmentAdapter.MyView
             holder.tvResenas.setText(Integer.toString(lugares.get(position).getReseñas()));
             Glide.with(context).load(lugares.get(position).getImagen()).into(holder.imagePlace);
             holder.ratingBar.setRating(lugares.get(position).getPuntaje());
+            holder.tvDireccion.setText(lugares.get(position).getDireccion());
+            holder.tvCategoria.setText(lugares.get(position).getCategoria());
         }
     }
 
@@ -65,6 +67,7 @@ public class FragmentAdapter extends RecyclerView.Adapter<FragmentAdapter.MyView
             tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
             imagePlace = (ImageView) itemView.findViewById(R.id.imagePlace);
             ratingBar = (RatingBar) itemView.findViewById(R.id.ratingview);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

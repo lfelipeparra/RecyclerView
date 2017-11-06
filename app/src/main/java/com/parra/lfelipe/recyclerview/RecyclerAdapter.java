@@ -48,6 +48,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             holder.tvResenas.setText(Integer.toString(lugares.get(position).getReseñas()));
             Glide.with(context).load(lugares.get(position).getImagen()).into(holder.imagePlace);
             holder.ratingBar.setRating(lugares.get(position).getPuntaje());
+            holder.tvCategoria.setText(lugares.get(position).getCategoria());
+            holder.tvDireccion.setVisibility(View.INVISIBLE);
         }
     }
 
