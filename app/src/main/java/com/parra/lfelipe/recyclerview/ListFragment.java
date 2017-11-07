@@ -17,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -72,8 +73,8 @@ public class ListFragment extends DialogFragment{
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("lugares");
         lugares = new ArrayList<Lugar>();
-
-        myRef.addValueEventListener(new ValueEventListener() {
+        Toast.makeText(getContext(),"hijo"+myRef.child("cat3").getKey(),Toast.LENGTH_SHORT).show();
+        myRef.orderByChild("Nombre").equalTo(name).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){

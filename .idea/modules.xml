@@ -3,13 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Libraries/Libraries.iml" filepath="$PROJECT_DIR$/Libraries/Libraries.iml" />
-      <module fileurl="file://C:\Users\Manuela\StudioProjects\RecyclerView\Libraries\Libraries.iml" filepath="C:\Users\Manuela\StudioProjects\RecyclerView\Libraries\Libraries.iml" />
       <module fileurl="file://$PROJECT_DIR$/RecyclerView.iml" filepath="$PROJECT_DIR$/RecyclerView.iml" />
-      <module fileurl="file://C:\Users\Manuela\StudioProjects\RecyclerView\RecyclerView.iml" filepath="C:\Users\Manuela\StudioProjects\RecyclerView\RecyclerView.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Manuela\StudioProjects\RecyclerView\app\app.iml" filepath="C:\Users\Manuela\StudioProjects\RecyclerView\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/Libraries/firebase4j-master/firebase4j-master.iml" filepath="$PROJECT_DIR$/Libraries/firebase4j-master/firebase4j-master.iml" />
-      <module fileurl="file://C:\Users\Manuela\StudioProjects\RecyclerView\Libraries\firebase4j-master\firebase4j-master.iml" filepath="C:\Users\Manuela\StudioProjects\RecyclerView\Libraries\firebase4j-master\firebase4j-master.iml" />
     </modules>
   </component>
 </project>

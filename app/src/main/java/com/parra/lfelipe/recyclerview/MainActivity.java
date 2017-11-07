@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements InterfaceSite{
 
@@ -37,5 +38,16 @@ public class MainActivity extends AppCompatActivity implements InterfaceSite{
         ft=fm.beginTransaction();
         listFragment = ListFragment.newInstance(name);
         listFragment.show(ft,"List");
+    }
+
+    @Override
+    public void aregarReseña(String idSite) {
+        Bundle args = new Bundle();
+        args.putString("idSite",idSite);
+        ft = fm.beginTransaction();
+        AddResFragment addResFragment = new AddResFragment();
+        addResFragment.setArguments(args);
+        ft.replace(R.id.container,addResFragment).commit();
+        ft.addToBackStack("InfoSite");
     }
 }

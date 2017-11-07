@@ -7,4 +7,5 @@ package com.parra.lfelipe.recyclerview;
 public interface InterfaceSite {
     public void searchSite(String id);
     public void listSite(String name);
+    public void aregarReseña(String idSite);
 }

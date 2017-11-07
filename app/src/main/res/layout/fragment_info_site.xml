@@ -4,11 +4,24 @@
     android:layout_height="match_parent"
     tools:context="com.parra.lfelipe.recyclerview.InfoSiteFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"
-        android:id="@+id/prueba"/>
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Check-In"
+                android:id="@+id/bAgregarCheckin"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Agregar reseña"
+                android:id="@+id/bAgregarReseña"/>
+        </LinearLayout>
 
+    </ScrollView>
 </FrameLayout>
