@@ -72,7 +72,6 @@ public class FragmentAdapter extends RecyclerView.Adapter<FragmentAdapter.MyView
                 @Override
                 public void onClick(View view) {
                     String id = lugares.get(getAdapterPosition()).getId();
-                    //Toast.makeText(context,id, Toast.LENGTH_SHORT).show();
                     searchInterface.searchSite(id);
                 }
             });

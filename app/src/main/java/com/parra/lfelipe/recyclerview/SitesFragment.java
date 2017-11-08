@@ -121,20 +121,17 @@ public class SitesFragment extends Fragment {
                             if(lugar.getNombre().equals(lugares.get(0).getNombre())){ indexes.add(lugar);}
                         }
                         Log.e("json","a"+lugares.size());
-
-                        float i =0;
                         for(Lugar rem:indexes){
                             scoreprom=scoreprom+rem.getPuntaje();
                             reseñas=reseñas+rem.getReseñas();
                             lugares.remove(rem);
-                            i++;
                         }
 
                         if(indexes.isEmpty()){
                             break;
                         }
                         Lugar nw = indexes.get(0);
-                        scoreprom=scoreprom/i;
+                        scoreprom=scoreprom/(float)reseñas;
                         nw.setReseñas(reseñas);
                         nw.setPuntaje(scoreprom);
                         temp.add(nw);

@@ -57,7 +57,6 @@ public class ListFragment extends DialogFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         String name = getArguments().getString("name");
-        Toast.makeText(getContext(),name,Toast.LENGTH_SHORT).show();
         View view = inflater.inflate(R.layout.fragment_list,container,false);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
@@ -73,7 +72,6 @@ public class ListFragment extends DialogFragment{
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("lugares");
         lugares = new ArrayList<Lugar>();
-        Toast.makeText(getContext(),"hijo"+myRef.child("cat3").getKey(),Toast.LENGTH_SHORT).show();
         myRef.orderByChild("Nombre").equalTo(name).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

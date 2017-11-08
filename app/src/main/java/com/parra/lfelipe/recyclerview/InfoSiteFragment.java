@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,7 +58,10 @@ public class InfoSiteFragment extends Fragment implements View.OnClickListener{
 
         switch (id){
             case R.id.bAgregarCheckin:
-
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference();
+                Checkin checkin = new Checkin("Felipe",this.id);
+                myRef.child("checkin").push().setValue(checkin);
                 break;
             case R.id.bAgregarReseña:
                 agregarReseña.aregarReseña(this.id);
