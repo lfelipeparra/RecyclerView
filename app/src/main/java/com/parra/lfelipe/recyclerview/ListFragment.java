@@ -77,7 +77,11 @@ public class ListFragment extends DialogFragment{
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     for(DataSnapshot data : dataSnapshot.getChildren()){
-                        lugares.add(data.getValue(Lugar.class));
+                        Lugar l = data.getValue(Lugar.class);
+                        float puntaje = l.getPuntaje();
+                        int reseñas = l.getReseñas();
+                        l.setPuntaje(puntaje/(float)reseñas);
+                        lugares.add(l);
                     }
                     adapter.notifyDataSetChanged();
                 }

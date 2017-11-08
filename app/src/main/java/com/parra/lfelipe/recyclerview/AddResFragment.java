@@ -96,6 +96,26 @@ public class AddResFragment extends Fragment implements View.OnClickListener, Ra
 
                                     }
                                 });
+                                Toast.makeText(getContext(),"hola",Toast.LENGTH_SHORT).show();
+                                final DatabaseReference refCheck = database.getReference("checkin");
+                                refCheck.orderByChild("uid").equalTo("Felipe").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.exists()){
+                                            for(DataSnapshot data: dataSnapshot.getChildren()){
+                                                if(data.getValue(Checkin.class).getSid().equals(idSite)){
+                                                    String key = data.getKey();
+                                                    refCheck.child(key);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
                                 getActivity().onBackPressed();
                             }else{
                                 Toast.makeText(getContext(),"Llene el campo de reseña",Toast.LENGTH_SHORT).show();
