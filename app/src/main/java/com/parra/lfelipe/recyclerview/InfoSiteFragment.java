@@ -4,6 +4,7 @@ package com.parra.lfelipe.recyclerview;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -58,10 +63,45 @@ public class InfoSiteFragment extends Fragment implements View.OnClickListener{
 
         switch (id){
             case R.id.bAgregarCheckin:
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference();
-                Checkin checkin = new Checkin("Felipe",this.id);
-                myRef.child("checkin").push().setValue(checkin);
+                final String sid;
+                sid = this.id;
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                final DatabaseReference myRef = database.getReference();
+                Query query = myRef.child("checkin");
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            Checkin ch;
+                            boolean verificar=false;
+                            for(DataSnapshot data: dataSnapshot.getChildren()){
+                                ch = data.getValue(Checkin.class);
+                                if(ch.getSid().equals(sid)&&ch.getUid().equals("Felipe")){
+                                    Toast.makeText(getContext(),"Ya realizó checkin",Toast.LENGTH_SHORT).show();
+                                    verificar=true;
+                                    break;
+                                }
+                            }
+                            if(!verificar){
+                                Checkin checkin = new Checkin("Felipe",sid);
+                                myRef.child("checkin").push().setValue(checkin);
+                                Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();
+                            }
+
+                        }else{
+                            Checkin checkin = new Checkin("Felipe",sid);
+                            myRef.child("checkin").push().setValue(checkin);
+                            Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
                 break;
             case R.id.bAgregarReseña:
                 agregarReseña.aregarReseña(this.id);

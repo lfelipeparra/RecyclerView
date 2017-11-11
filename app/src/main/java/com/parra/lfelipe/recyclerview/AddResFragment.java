@@ -2,6 +2,7 @@ package com.parra.lfelipe.recyclerview;
 
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +15,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -65,63 +67,57 @@ public class AddResFragment extends Fragment implements View.OnClickListener, Ra
             case R.id.bAgregar:
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 final DatabaseReference myRef = database.getReference();
-                Query query = myRef.child("checkin").orderByChild("uid").equalTo("Felipe");
-                query = query.getRef().orderByChild("sid").equalTo(idSite);
-
+                Query query = myRef.child("checkin");
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.e("prueba",dataSnapshot.toString());
                         if(dataSnapshot.exists()){
-                            String text = tvReseña.getText().toString();
-                            if(!text.isEmpty()){
-                                Reseñas reseñas = new Reseñas("Felipe",idSite,text,puntaje);
-                                myRef.child("reseñas").push().setValue(reseñas);
-                                final DatabaseReference refSite = database.getReference("lugares");
-                                refSite.orderByChild("Id").equalTo(idSite).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.exists()){
-                                            for (DataSnapshot data: dataSnapshot.getChildren()){
-                                                Lugar lugar = data.getValue(Lugar.class);
-                                                Map<String, Object> updates = new HashMap<String, Object>();
-                                                updates.put("Reseñas",lugar.getReseñas()+1);
-                                                updates.put("Puntaje",lugar.getPuntaje()+puntaje);
-                                                refSite.child(idSite).updateChildren(updates);
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                                Toast.makeText(getContext(),"hola",Toast.LENGTH_SHORT).show();
-                                final DatabaseReference refCheck = database.getReference("checkin");
-                                refCheck.orderByChild("uid").equalTo("Felipe").addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.exists()){
-                                            for(DataSnapshot data: dataSnapshot.getChildren()){
-                                                if(data.getValue(Checkin.class).getSid().equals(idSite)){
-                                                    String key = data.getKey();
-                                                    refCheck.child(key);
+                            Checkin ch;
+                            boolean verificar=false;
+                            for(DataSnapshot data: dataSnapshot.getChildren()){
+                                ch = data.getValue(Checkin.class);
+                                if(ch.getSid().equals(idSite) && ch.getUid().equals("Felipe")){
+                                    final String key = data.getKey();
+                                    String text = tvReseña.getText().toString();
+                                    verificar=true;
+                                    if(!text.isEmpty()){
+                                        Reseñas reseñas = new Reseñas("Felipe",idSite,text,puntaje);
+                                        myRef.child("reseñas").push().setValue(reseñas);
+                                        final DatabaseReference refSite = database.getReference("lugares");
+                                        refSite.orderByChild("Id").equalTo(idSite).addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                if(dataSnapshot.exists()){
+                                                    myRef.child("checkin").child(key).removeValue();
+                                                    for (DataSnapshot data: dataSnapshot.getChildren()){
+                                                        Lugar lugar = data.getValue(Lugar.class);
+                                                        Map<String, Object> updates = new HashMap<String, Object>();
+                                                        updates.put("Reseñas",lugar.getReseñas()+1);
+                                                        updates.put("Puntaje",lugar.getPuntaje()+puntaje);
+                                                        refSite.child(idSite).updateChildren(updates);
+                                                    }
                                                 }
                                             }
-                                        }
-                                    }
 
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
 
+                                            }
+                                        });
+
+                                        getActivity().onBackPressed();
+                                        break;
+                                    }else{
+                                        Toast.makeText(getActivity(),"Llene el campo de reseña",Toast.LENGTH_SHORT).show();
                                     }
-                                });
-                                getActivity().onBackPressed();
-                            }else{
-                                Toast.makeText(getContext(),"Llene el campo de reseña",Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            if(!verificar){
+                                Toast.makeText(getActivity(),"Debes realizar checkin",Toast.LENGTH_SHORT).show();
                             }
                         }else{
-                            Toast.makeText(getContext(),"Debes realizar checkin",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),"Debes realizar checkin",Toast.LENGTH_SHORT).show();
                         }
                     }
 
