@@ -2,7 +2,14 @@ package com.parra.lfelipe.recyclerview;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +35,10 @@ public class InfoSiteFragment extends Fragment implements View.OnClickListener{
     View view;
     InterfaceSite agregarReseña;
     String id;
+    private LocationManager locationManager;
+    private Location location;
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -64,11 +75,11 @@ public class InfoSiteFragment extends Fragment implements View.OnClickListener{
         switch (id){
             case R.id.bAgregarCheckin:
                 final String sid;
-                sid = this.id;
+                sid = this.id; //cuidado dentro de if(!verificar)
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 final DatabaseReference myRef = database.getReference();
                 Query query = myRef.child("checkin");
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                query.addListenerForSingleValueEvent(new ValueEventListener() { //Arreglar
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()){
@@ -82,16 +93,185 @@ public class InfoSiteFragment extends Fragment implements View.OnClickListener{
                                     break;
                                 }
                             }
-                            if(!verificar){
-                                Checkin checkin = new Checkin("Felipe",sid);
+                            if(!verificar){//igual al no existe. Posible función
+                                locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+                                location = locationManager.getLastKnownLocation("gps");
+                                Log.e("prueba",location.getLatitude()+","+location.getLongitude());
+                                myRef.child("lugares").orderByChild("Id").equalTo(sid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for(DataSnapshot data: dataSnapshot.getChildren()){
+                                            double latitud = data.child("Latitud").getValue(double.class);
+                                            double longitud = data.child("Longitud").getValue(double.class);
+
+
+                                            Location loc1 = new Location("");
+                                            loc1.setLatitude(latitud);
+                                            loc1.setLongitude(longitud);
+
+                                            Location loc2 = new Location("");
+                                            loc2.setLatitude(location.getLatitude());
+                                            loc2.setLongitude(location.getLongitude());
+
+                                            float distanceInMeters = loc1.distanceTo(loc2);
+                                            Log.e("Prueba","Metros: "+distanceInMeters);
+
+                                            if(distanceInMeters <= 50){
+                                                Checkin checkin = new Checkin("Felipe",sid);
+                                                myRef.child("checkin").push().setValue(checkin);
+                                                Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();
+                                                myRef.child("ubicacion").orderByChild("uid").equalTo("Felipe").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        if(dataSnapshot.exists()){
+                                                            Ubicacion ubicacion;
+                                                            for(DataSnapshot data : dataSnapshot.getChildren()){
+                                                                ubicacion = data.getValue(Ubicacion.class);
+                                                                if(ubicacion.getSid().equals(sid)){
+                                                                    myRef.child("ubicacion").child(data.getKey()).removeValue();
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                            }else{
+                                                myRef.child("ubicacion").orderByChild("uid").equalTo("Felipe").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        if(dataSnapshot.exists()){
+                                                            Ubicacion ubicacion;
+                                                            boolean ver=false;
+                                                            for(DataSnapshot data : dataSnapshot.getChildren()){
+                                                                ubicacion = data.getValue(Ubicacion.class);
+                                                                if(ubicacion.getSid().equals(sid)){
+                                                                    ver = true;
+                                                                    Checkin checkin = new Checkin("Felipe",sid);
+                                                                    myRef.child("checkin").push().setValue(checkin);
+                                                                    Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();
+                                                                    myRef.child("ubicacion").child(data.getKey()).removeValue();
+                                                                }
+                                                            }
+                                                            if(!ver){
+                                                                Toast.makeText(getContext(),"No has estado cerca del sitio",Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }else {
+                                                            Toast.makeText(getContext(),"No has estado cerca del sitio",Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                                /*Checkin checkin = new Checkin("Felipe",sid);
                                 myRef.child("checkin").push().setValue(checkin);
-                                Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();*/
+
                             }
 
                         }else{
-                            Checkin checkin = new Checkin("Felipe",sid);
-                            myRef.child("checkin").push().setValue(checkin);
-                            Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();
+                            locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+                            location = locationManager.getLastKnownLocation("gps");
+                            myRef.child("lugares").orderByChild("Id").equalTo(sid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for(DataSnapshot data: dataSnapshot.getChildren()){
+                                        double latitud = data.child("Latitud").getValue(double.class);
+                                        double longitud = data.child("Longitud").getValue(double.class);
+
+
+                                        Location loc1 = new Location("");
+                                        loc1.setLatitude(latitud);
+                                        loc1.setLongitude(longitud);
+
+                                        Location loc2 = new Location("");
+                                        loc2.setLatitude(location.getLatitude());
+                                        loc2.setLongitude(location.getLongitude());
+
+                                        float distanceInMeters = loc1.distanceTo(loc2);
+                                        Log.e("Prueba","Metros: "+distanceInMeters);
+
+                                        if(distanceInMeters <= 50){
+                                            Checkin checkin = new Checkin("Felipe",sid);
+                                            myRef.child("checkin").push().setValue(checkin);
+                                            Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();
+                                            myRef.child("ubicacion").orderByChild("uid").equalTo("Felipe").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    if(dataSnapshot.exists()){
+                                                        Ubicacion ubicacion;
+                                                        for(DataSnapshot data : dataSnapshot.getChildren()){
+                                                            ubicacion = data.getValue(Ubicacion.class);
+                                                            if(ubicacion.getSid().equals(sid)){
+                                                                myRef.child("ubicacion").child(data.getKey()).removeValue();
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
+                                        }else{
+                                            myRef.child("ubicacion").orderByChild("uid").equalTo("Felipe").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    if(dataSnapshot.exists()){
+                                                        Ubicacion ubicacion;
+                                                        boolean ver=false;
+                                                        for(DataSnapshot data : dataSnapshot.getChildren()){
+                                                            ubicacion = data.getValue(Ubicacion.class);
+                                                            if(ubicacion.getSid().equals(sid)){
+                                                                ver = true;
+                                                                Log.e("prueba","HOla");
+                                                                Checkin checkin = new Checkin("Felipe",sid);
+                                                                myRef.child("checkin").push().setValue(checkin);
+                                                                Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();
+                                                                myRef.child("ubicacion").child(data.getKey()).removeValue();
+                                                            }
+                                                        }
+                                                        if(!ver){
+                                                            Toast.makeText(getContext(),"No has estado cerca del sitio",Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }else{
+                                                        Toast.makeText(getContext(),"No has estado cerca del sitio",Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                                /*Checkin checkin = new Checkin("Felipe",sid);
+                                myRef.child("checkin").push().setValue(checkin);
+                                Toast.makeText(getContext(),"Checkin creado",Toast.LENGTH_SHORT).show();*/
                         }
 
                     }
